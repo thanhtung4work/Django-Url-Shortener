@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chisai URL</title>
+  
+  <!-- CSS -->
+  <link rel="stylesheet" href="{% static 'style.css'%}">
+
+  <!-- BoxIcon -->
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+  <!-- JQuery -->
+  <script 
+  src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   
+  crossorigin="anonymous">
+  </script>
+</head>
+<body>
+  <section class="container forms">
+    <div class="form">
+      <div class="form-content">
+        <header>Chisai URL</header>
+        <form id="url-post-form">
+          {% csrf_token %}
+          <div class="field input-field">
+            <input type="text" name="url" id="url" class="input" placeholder="Your URL">
+          </div>
+
+          <div class="field input-field">
+            <button type="submit" id="submit">
+              <i class='bx bx-plus'></i>
+              Submit
+            </button>
+          </div>
+
+          <div class="field input-field">
+            <input type="text" name="shorturl" id="shorturl" class="input" placeholder="Short URL" readonly>
+          </div>
+
+          <div class="field input-field">
+            <button type="button" id="copy">
+              <i class='bx bx-copy'></i>
+              Copy
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <script type="text/javascript">
+    $(document).on('submit', '#url-post-form', function(e){
+      e.preventDefault();
+    
+      $.ajax({
+        type: 'POST',
+        url: '/create',
+        data:{
+          url: $('#url').val(),
+          csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        },
+        success: function(response){
+          $('#shorturl').val("localhost:8000/" + response);
+        },
+        error: function(error){
+          console.log(error);
+        }
+      });
+    });
+    $('#copy').click(function(e) {
+        // Get the text field
+        var copyText = document.getElementById("shorturl");
+
+        // Select the text field
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copy the text inside the text field
+        navigator.clipboard.writeText(copyText.value);
+
+        // Alert the copied text
+        alert("Copied the text: " + copyText.value);
+    })
+  </script>
+</body>
+</html>
